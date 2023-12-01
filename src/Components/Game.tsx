@@ -62,8 +62,11 @@ const Game: React.FC = () => {
     if(!gameStatus.start)return;
 
     if(checkGameState()){
-        
+       setTimeout(()=>{
+
+        alert(gameStatus.symbol+"-Won!")
         setWinner(gameStatus.symbol)
+       },200)
     }
 
    },[matrix]);
