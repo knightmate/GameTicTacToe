@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 // Cell component
@@ -22,13 +22,7 @@ const CellContainer = styled.div`
   }
 `;
 
-const Cell: React.FC<CellProps> = ({ value, onClick }) => {
-  return (
-    <CellContainer onClick={onClick}>
-      {value}
-    </CellContainer>
-  );
-};
+ 
 
 // Game component
 const GameContainer = styled.div`
@@ -38,16 +32,36 @@ const GameContainer = styled.div`
   max-width: 300px;
   margin: auto;
 `;
-
+export interface GameStart {
+    start: boolean;
+    symbol: "x" | "o";
+  } 
 const Game: React.FC = () => {
 
-  const [matrix, setMatrix] = useState([
+  const [matrix, setMatrix] = useState<any>([
     [null, null, null],
     [null, null, null],
     [null, null, null],
   ]);
+   
+   const [gameStatus,setGameStatus]=useState<GameStart>({start:true,symbol:"x"});
+ 
+
+  function onClick(rowIndex: number, colIndex: number){
+
+     //get the row 
+     matrix[rowIndex][colIndex]=gameStatus.symbol;
+    
+     setMatrix([...matrix])
+    
+     setGameStatus({start:true,symbol:gameStatus.symbol=="o"?"x":"o"})
+
+  }
+    
   const renderCell = (rowIndex: number, colIndex: number) => (
-    <Cell key={`${rowIndex}-${colIndex}`} value={matrix[rowIndex][colIndex]} onClick={() => {}} />
+    <CellContainer onClick={()=>onClick(rowIndex,colIndex)}>
+      {matrix[rowIndex][colIndex]}
+    </CellContainer>
   );
 
   return (
