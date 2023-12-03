@@ -1,5 +1,6 @@
 import React, { startTransition, useEffect, useState, useTransition } from 'react';
 import styled from 'styled-components';
+import Modal from './Modal.tsx';
 
 // Cell component
 interface CellProps {
@@ -48,31 +49,20 @@ export interface GameStart {
   } 
 const Game: React.FC = () => {
 
-  const [matrix, setMatrix] = useState<any>([
+  const defaultMatrix=[
     [null, null, null],
     [null, null, null],
     [null, null, null],
-  ]);
+  ];
+  const [matrix, setMatrix] = useState<any>(defaultMatrix);
    
-   const [gameStatus,setGameStatus]=useState<GameStart>({start:false,symbol:"x"});
+  const defaultState:GameStart={start:false,symbol:"x"}
+   const [gameStatus,setGameStatus]=useState<GameStart>(defaultState);
    const [winner,setWinner]=useState<string|null>(null);
 
    const [isPending,setTransition]=useTransition();
 
-
-   useEffect(()=>{
-
-    if(!gameStatus.start)return;
-
-    console.log("gameStatus",gameStatus.symbol)
-    // if(checkGameState()){
-    //    setTimeout(()=>{
-    //     alert(gameStatus.symbol+"-Won!")
-    //     setWinner(gameStatus.symbol)
-    //    },200)
-    // }
-
-   },[matrix]);
+ 
 
   function onClick(rowIndex: number, colIndex: number){
 
@@ -86,8 +76,12 @@ const Game: React.FC = () => {
      setTimeout(()=>{
 
       if(checkHasWinnerFound(matrix)){
-        alert(gameStatus.symbol+"-Won!")
-        setWinner(gameStatus.symbol)
+        setWinner(gameStatus.symbol+"Win's!")
+      }
+      console.log("checkIfDraw(matrix)",checkIfDraw(matrix),matrix);
+
+      if(checkIfDraw(matrix)){
+        setWinner("Game Draw")
       }
 
      },0)
@@ -146,6 +140,18 @@ const Game: React.FC = () => {
        return false;
 
   }
+  function checkIfDraw(matrix: (string | null)[][]): boolean {
+    for (let row = 0; row < matrix.length; row++) {
+      for (let col = 0; col < matrix[row].length; col++) {
+        if (matrix[row][col] === null) {
+          return false; // If any element is null, it's not a draw
+        }
+      }
+    }
+    return true; // If no element is null, it's a draw
+  }
+  
+  
     
   const renderCell = (rowIndex: number, colIndex: number) => (
     <CellContainer onClick={()=>onClick(rowIndex,colIndex)}>
@@ -153,10 +159,24 @@ const Game: React.FC = () => {
     </CellContainer>
   );
 
+  const resetGame=()=>{
+
+    setMatrix(defaultMatrix);
+    setGameStatus(defaultState);
+    setWinner(null);
+
+  }
   
 
   return (
     <div>
+      <Modal isOpen={winner?true:false} title='' buttonTwoTitle='Reset' onClose={function (): void {
+      
+      resetGame();
+
+      } } buttononetitle={''}>
+        <h1 style={{color:'green'}}>{winner}</h1>
+        </Modal>
       <GameContainer>
         {matrix.map((row, rowIndex) => row.map((_, colIndex) => renderCell(rowIndex, colIndex)))}
       </GameContainer>
