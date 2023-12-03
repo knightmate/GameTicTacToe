@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useTransition } from 'react';
 import styled from 'styled-components';
 
 // Cell component
@@ -57,13 +57,15 @@ const Game: React.FC = () => {
    const [gameStatus,setGameStatus]=useState<GameStart>({start:false,symbol:"x"});
    const [winner,setWinner]=useState<string|null>(null);
 
+   const [isPending,setTransition]=useTransition();
+
+
    useEffect(()=>{
 
     if(!gameStatus.start)return;
 
     if(checkGameState()){
        setTimeout(()=>{
-
         alert(gameStatus.symbol+"-Won!")
         setWinner(gameStatus.symbol)
        },200)
@@ -103,16 +105,22 @@ const Game: React.FC = () => {
        const firstLine  =matrix[0];
        const secondLine =matrix[1];
        const thirdLine  =matrix[2];
+       
 
+       for(let i=0;i<matrix.length;i++){
+
+         const targetRow  =[matrix[i][0],matrix[i][1],matrix[i][2]];
+          if(doesArrayHasAllSameElement(targetRow))return true;
+
+          const tsrgetColumn  =[matrix[0][i],matrix[1][i],matrix[2][i]];
+          if(doesArrayHasAllSameElement(tsrgetColumn))return true;
+
+
+
+
+       }
         
-       if(doesArrayHasAllSameElement(firstLine))return true;
-
-       console.log("arr",firstLine,doesArrayHasAllSameElement(firstLine));
-
-       if(doesArrayHasAllSameElement(secondLine))return true;
-
-       if(doesArrayHasAllSameElement(thirdLine))return true;
-
+        
        //check in RightLine
        const lastColumn  =[matrix[0][2],matrix[1][2],matrix[2][2]]
 
