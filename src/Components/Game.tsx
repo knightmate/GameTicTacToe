@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useTransition } from 'react';
+import React, { startTransition, useEffect, useState, useTransition } from 'react';
 import styled from 'styled-components';
 
 // Cell component
@@ -64,25 +64,40 @@ const Game: React.FC = () => {
 
     if(!gameStatus.start)return;
 
-    if(checkGameState()){
-       setTimeout(()=>{
-        alert(gameStatus.symbol+"-Won!")
-        setWinner(gameStatus.symbol)
-       },200)
-    }
+    console.log("gameStatus",gameStatus.symbol)
+    // if(checkGameState()){
+    //    setTimeout(()=>{
+    //     alert(gameStatus.symbol+"-Won!")
+    //     setWinner(gameStatus.symbol)
+    //    },200)
+    // }
 
    },[matrix]);
 
   function onClick(rowIndex: number, colIndex: number){
 
      //get the row 
-     matrix[rowIndex][colIndex]=gameStatus.symbol;
+     let target= matrix[rowIndex][colIndex]
+
+     if(target!=null)return;
+
+     matrix[rowIndex][colIndex] =gameStatus.symbol;
     
+     setTimeout(()=>{
+
+      if(checkHasWinnerFound(matrix)){
+        alert(gameStatus.symbol+"-Won!")
+        setWinner(gameStatus.symbol)
+      }
+
+     },0)
      setMatrix([...matrix])
-    
      setGameStatus({start:true,symbol:gameStatus.symbol=="o"?"x":"o"})
 
+
   }
+
+   
 
   function doesArrayHasAllSameElement(arr:[]){
       
@@ -97,16 +112,9 @@ const Game: React.FC = () => {
 
   }
 
-  function checkGameState(){
+  function checkHasWinnerFound(matix:[]){
 
-       //Check in FirstLine
-
-    
-       const firstLine  =matrix[0];
-       const secondLine =matrix[1];
-       const thirdLine  =matrix[2];
-       
-
+ 
        for(let i=0;i<matrix.length;i++){
 
          const targetRow  =[matrix[i][0],matrix[i][1],matrix[i][2]];
@@ -114,9 +122,6 @@ const Game: React.FC = () => {
 
           const tsrgetColumn  =[matrix[0][i],matrix[1][i],matrix[2][i]];
           if(doesArrayHasAllSameElement(tsrgetColumn))return true;
-
-
-
 
        }
         
@@ -137,6 +142,7 @@ const Game: React.FC = () => {
        
        if(doesArrayHasAllSameElement(diagonal2))return true;
 
+       
        return false;
 
   }
